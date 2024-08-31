@@ -11,15 +11,6 @@ services:
     depends_on:
       - mariadb
       - redis
-    environment:
-      - DB_HOST=mariadb
-      - DB_PORT=3306
-      - DB_NAME=sslkeeper
-      - DB_USER=user
-      - DB_PASSWORD=userpassword
-      - DJANGO_SETTINGS_MODULE=sslkeeper.settings
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
   
   celery:
     build: .
@@ -44,23 +35,13 @@ services:
   mariadb:
     image: mariadb:11.4
     container_name: mariadb
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: sslkeeper
-      MYSQL_USER: user
-      MYSQL_PASSWORD: userpassword
     volumes:
       - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-  
+    
   redis:
     image: redis:7.4
     container_name: redis
     restart: always
-    ports:
-      - "6379:6379"
-
 
 volumes:
   db_data:
