@@ -20,4 +20,8 @@ app.conf.beat_schedule = {
         'task': 'domains.tasks.check_certificate_expiry',
         'schedule': crontab(hour=0, minute=0),  # Run once a day at midnight
     },
+    'renew-certificates-every-day': {
+        'task': 'domains.tasks.renew_certificates',
+        'schedule': crontab(hour=1, minute=0),  # Runs daily at 1 AM
+    },
 }
