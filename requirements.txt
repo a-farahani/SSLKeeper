@@ -4,7 +4,7 @@ mysqlclient~=2.2.4
 celery~=5.4.0
 redis
 python-telegram-bot~=21.4
-certbot~=2.11.0
 django-dotenv~=1.4.2
 certbot
 cloudflare
+certbot-dns-cloudflare
