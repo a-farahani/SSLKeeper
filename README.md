@@ -9,6 +9,7 @@ Features
 - Automatically calculate and store certificate expiration dates.
 - Manage Cloudflare DNS records for Let's Encrypt DNS-01 challenges.
 - Automated certificate renewal when expiration is within 7 days.
+- Alerts sent via Telegram when certificates are 15 days from expiration.
 - Integration with Celery for task scheduling and background processing.
 - Notifications sent to a Telegram bot about certificate expirations.
 
