@@ -12,7 +12,7 @@ def check_certificate_expiry():
     Task to check for expiring certificates and send alerts to Telegram bot.
     """
     today = timezone.now().date()
-    warning_date = today + timedelta(days=500)
+    warning_date = today + timedelta(days=15)
 
     # Find domains with certificates expiring within 15 days
     expiring_domains = Domain.objects.filter(expiration_date__lte=warning_date, expiration_date__gt=today)
