@@ -30,8 +30,11 @@ class Domain(models.Model):
     domain_name = models.CharField(max_length=255, unique=True)
     private_key = LongTextField(blank=True, null=True)
     certificate = LongTextField(blank=True, null=True, validators=[validate_certificate])
+    chain = LongTextField(blank=True, null=True)
+    fullchain = LongTextField(blank=True, null=True)
     expiration_date = models.DateField(blank=True, null=True)
     cloudflare_api_key = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField(max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         # Calculate the expiration date if the certificate is provided
