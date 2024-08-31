@@ -75,7 +75,7 @@ Usage
 Configuration
 -------------
 
-*   **Cloudflare API Key:** Add your Cloudflare API key in the .env file under CLOUD\_FLARE\_API\_KEY.
+*   **Cloudflare API Key:** Add the Cloudflare API key in the Domain model within the Django admin panel. This key will be used for DNS challenges during certificate renewal.
     
 *   **Email:** Specify the email address for Let's Encrypt notifications in the Domain model.
     
