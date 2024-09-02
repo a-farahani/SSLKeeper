@@ -42,15 +42,15 @@ def send_telegram_alert(domains):
 def renew_certificates():
     """
     Task to renew SSL certificates for domains expiring in 7 days using Let's Encrypt and Cloudflare DNS challenge.
+    Task to get SSL certificates for domains without certificate using Let's Encrypt and Cloudflare DNS challenge.
     """
     today = timezone.now().date()
     renewal_date = today + timedelta(days=7)
 
-    # Fetch domains with certificates expiring in 7 days
-    domains_to_renew = Domain.objects.filter(expiration_date__lte=renewal_date, expiration_date__gt=today)
+    # Fetch domains with certificate expiring in 7 days or without any certificate
+    domains_to_renew = Domain.objects.filter(expiration_date__lte=renewal_date, expiration_date__gt=today) | Domain.objects.filter(certificate='')
 
     for domain in domains_to_renew:
-        print(domain)
         if domain.cloudflare_api_key:
             renew_certificate(domain)
 
@@ -61,7 +61,7 @@ def renew_certificate(domain):
     """
     domain_name = domain.domain_name
     email = domain.email
-    api_key = domain.cloudflare_api_key
+    api_key = domain.cloudflare_api_key.api_key
 
     # Create a temporary credentials file for this specific renewal
     cloudflare_credentials_path = f"/tmp/cloudflare_{domain_name}.ini"

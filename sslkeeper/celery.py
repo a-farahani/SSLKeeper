@@ -22,6 +22,6 @@ app.conf.beat_schedule = {
     },
     'renew-certificates-every-day': {
         'task': 'domains.tasks.renew_certificates',
-        'schedule': crontab(hour=1, minute=0),  # Runs daily at 1 AM
+        'schedule': crontab(minute='*'),  # Runs every minute
     },
 }
