@@ -1,5 +1,5 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.12-slim-bookworm
+FROM python:3.12-alpine
 
 # Set environment variables to prevent Python from writing .pyc files and buffering stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -9,17 +9,15 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # Install OS package dependencies
-RUN apt update; apt install -y --no-install-recommends --no-install-suggests \
-    build-essential \
-    pkg-config \
-    python3-dev \
-    default-libmysqlclient-dev
+RUN apk add --no-cache mariadb-dev
 
 # Copy the requirements file to the container
 COPY requirements.txt /app/
 
 # Install the Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apk add --no-cache --virtual build-deps gcc python3-dev musl-dev && \
+    pip install --no-cache-dir -r requirements.txt && \
+    apk del build-deps gcc python3-dev musl-dev 
 
 # Copy the entire Django project into the container
 COPY . /app/
