@@ -1,0 +1,52 @@
+services:
+
+  sslkeeper:
+    image: sslkeeper
+    container_name: sslkeeper
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mariadb
+      - redis
+  
+  celery:
+    image: sslkeeper
+    container_name: celery
+    command: celery -A sslkeeper worker -l info
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+      - redis
+
+  celery-beat:
+    image: sslkeeper
+    container_name: celery-beat
+    command: celery -A sslkeeper beat -l info
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+      - redis
+
+  mariadb:
+    image: mariadb:11.4
+    container_name: mariadb
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=$MARIADB_ROOT_PASSWORD
+      - MARIADB_DATABASE=$DB_NAME
+      - MARIADB_USER=$DB_USER
+      - MARIADB_PASSWORD=$DB_PASSWORD
+    
+  redis:
+    image: redis:7.4
+    container_name: redis
+    restart: always
+
+volumes:
+  db_data:
