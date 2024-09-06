@@ -38,17 +38,67 @@ def send_telegram_alert(domains):
         )
         asyncio.run(bot.send_message(chat_id=chat_id, text=message))
 
+
+@shared_task
+def generate_certificate(domain_id):
+    """
+    Generate the SSL certificate using Certbot and Cloudflare DNS challenge.
+    """
+
+    domain = Domain.objects.get(id=domain_id)
+    domain_name = domain.domain_name
+    email = domain.email
+    api_key = domain.cloudflare_api_key.api_key
+
+    # Create a temporary credentials file for this specific renewal
+    cloudflare_credentials_path = f"/tmp/cloudflare_{domain_name}.ini"
+    
+    with open(cloudflare_credentials_path, 'w') as f:
+        f.write(f'dns_cloudflare_api_token = {api_key}')
+
+    # Ensure the credentials file is not world-readable
+    os.chmod(cloudflare_credentials_path, 0o600)
+
+    # Command to run Certbot with DNS challenge using dynamic Cloudflare credentials
+    certbot_command = [
+        'certbot', 'certonly',
+        '-d', domain_name,
+        '-d', f'*.{domain_name}',
+        '--dns-cloudflare',
+        '--dns-cloudflare-credentials', cloudflare_credentials_path,
+        '--non-interactive',
+        '--agree-tos',
+        '--email', email,
+        '--force-renewal'
+    ]
+
+    if not domain.certificate:
+        try:
+            subprocess.run(certbot_command, check=True)
+            print(f"Successfully renewed certificate for {domain_name}")
+
+            # Update the domain model with new certificate information
+            update_domain_certificates(domain)
+
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to renew certificate for {domain_name}: {e}")
+        
+        finally:
+            # Clean up credentials file
+            if os.path.exists(cloudflare_credentials_path):
+                os.remove(cloudflare_credentials_path)
+
+
 @shared_task
 def renew_certificates():
     """
     Task to renew SSL certificates for domains expiring in 7 days using Let's Encrypt and Cloudflare DNS challenge.
-    Task to get SSL certificates for domains without certificate using Let's Encrypt and Cloudflare DNS challenge.
     """
     today = timezone.now().date()
     renewal_date = today + timedelta(days=7)
 
     # Fetch domains with certificate expiring in 7 days or without any certificate
-    domains_to_renew = Domain.objects.filter(expiration_date__lte=renewal_date, expiration_date__gt=today) | Domain.objects.filter(certificate='')
+    domains_to_renew = Domain.objects.filter(expiration_date__lte=renewal_date, expiration_date__gt=today)
 
     for domain in domains_to_renew:
         if domain.cloudflare_api_key:
