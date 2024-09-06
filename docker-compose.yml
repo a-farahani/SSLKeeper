@@ -3,7 +3,10 @@ services:
   sslkeeper:
     build: .
     container_name: sslkeeper
+    restart: always
     command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      - TZ=${TimeZone}
     env_file:
       - .env
     volumes:
@@ -17,7 +20,10 @@ services:
   celery:
     build: .
     container_name: celery
+    restart: always
     command: celery -A sslkeeper worker -l info
+    environment:
+      - TZ=${TimeZone}
     env_file:
       - .env
     volumes:
@@ -29,7 +35,10 @@ services:
   celery-beat:
     build: .
     container_name: celery-beat
+    restart: always
     command: celery -A sslkeeper beat -l info
+    environment:
+      - TZ=${TimeZone}
     env_file:
       - .env
     volumes:
@@ -41,9 +50,11 @@ services:
   mariadb:
     image: mariadb:11.4
     container_name: mariadb
+    restart: always
     volumes:
       - db_data:/var/lib/mysql
     environment:
+      - TZ=${TimeZone}
       - MARIADB_ROOT_PASSWORD=$MARIADB_ROOT_PASSWORD
       - MARIADB_DATABASE=$DB_NAME
       - MARIADB_USER=$DB_USER
@@ -53,6 +64,8 @@ services:
     image: redis:7.4
     container_name: redis
     restart: always
+    environment:
+      - TZ=${TimeZone}
 
 volumes:
   db_data:
