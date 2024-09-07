@@ -1,0 +1,9 @@
+Django~=4.2
+mysqlclient~=2.2.4
+celery~=5.4.0
+redis~=5.0.8
+python-telegram-bot~=21.4
+django-dotenv~=1.4.2
+certbot~=2.11.0
+cloudflare~=2.19.4
+certbot-dns-cloudflare~=2.11.0
