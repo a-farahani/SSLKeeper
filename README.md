@@ -25,7 +25,7 @@ Installation
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/yourusername/sslkeeper.git
+   git clone https://github.com/a-farahani/sslkeeper.git
    cd sslkeeper
    ```
 
