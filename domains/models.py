@@ -60,6 +60,8 @@ class Domain(models.Model):
         if self.certificate:
             cert = x509.load_pem_x509_certificate(self.certificate.encode(), default_backend())
             self.expiration_date = cert.not_valid_after
+        else:
+            self.expiration_date = None
         super().save(*args, **kwargs)
 
     def __str__(self):
